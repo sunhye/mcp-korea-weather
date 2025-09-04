@@ -16,72 +16,79 @@
 
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
 import { z } from "zod"
-import {getUltraSrtFcst, getUltraSrtNcst, summarizeFcst, summarizeObs} from "./kmaClient";
 
 // Optional: If you have user-level config, define it here
 // This should map to the config in your smithery.yaml file
 export const configSchema = z.object({
-	debug: z.boolean().default(false).describe("Enable debug logging"),
+    debug: z.boolean().default(false).describe("Enable debug logging"),
 })
 
 export default function createServer({
-	config,
-}: {
-	config: z.infer<typeof configSchema> // Define your config in smithery.yaml
+                                         config,
+                                     }: {
+    config: z.infer<typeof configSchema> // Define your config in smithery.yaml
 }) {
-	const server = new McpServer({
-		name: "mcp-korea-weather",
-		version: "1.0.0",
-	})
+    const server = new McpServer({
+        name: "Say Hello",
+        version: "1.0.0",
+    })
 
-	// Add a tool
+    // Add a tool
     server.registerTool(
-        "get_korea_weather",
+        "hello",
         {
-            title: "get_korea_weather",
-            description: "기상청 초단기실황(기온/강수/풍속/습도)",
-            inputSchema: {
-                latitude: z.string(),
-                longitude: z.string()
+            title: "Hello Tool",
+            description: "Say hello to someone",
+            inputSchema: { name: z.string().describe("Name to greet") },
+        },
+        async ({ name }) => ({
+            content: [{ type: "text", text: `Hello, ${name}!` }],
+        }),
+    )
+
+    // Add a resource
+    server.registerResource(
+        "hello-world-history",
+        "history://hello-world",
+        {
+            title: "Hello World History",
+            description: "The origin story of the famous 'Hello, World' program",
+        },
+        async uri => ({
+            contents: [
+                {
+                    uri: uri.href,
+                    text: '"Hello, World" first appeared in a 1972 Bell Labs memo by Brian Kernighan and later became the iconic first program for beginners in countless languages.',
+                    mimeType: "text/plain",
+                },
+            ],
+        }),
+    )
+
+    // Add a prompt
+    server.registerPrompt(
+        "greet",
+        {
+            title: "Hello Prompt",
+            description: "Say hello to someone",
+            argsSchema: {
+                name: z.string().describe("Name of the person to greet"),
             },
         },
-        async (args, context) => {
-            const {latitude, longitude} = args as { latitude: string; longitude: string };
-            const {items, nx, ny, base_date, base_time} = await getUltraSrtNcst(latitude, longitude);
-            const summary = summarizeObs(items);
+        async ({ name }) => {
             return {
-                content: [
+                messages: [
                     {
-                        type: "text",
-                        text: `(${latitude}, ${longitude}) nx=${nx}, ny=${ny} / 기준 ${base_date} ${base_time}\n${summary}`
-                    }
-                ]
-            };
+                        role: "user",
+                        content: {
+                            type: "text",
+                            text: `Say hello to ${name}`,
+                        },
+                    },
+                ],
+            }
         },
     )
 
-    server.registerTool(
-        "get_korea_forecast",
-        {
-            title: "get_korea_forecast",
-            description: "기상청 초단기예보(향후 3개 타임슬롯 요약)",
-            inputSchema: {
-                latitude: z.string(),
-                longitude: z.string()
-            },
-        },
-        async (args, context) => {
-            const { latitude, longitude } = args as { latitude: string; longitude: string };
-            const { items, nx, ny, base_date, base_time } = await getUltraSrtFcst(latitude, longitude);
-            const lines = summarizeFcst(items);
-            return {
-                content: [
-                    { type: "text", text: `(${latitude}, ${longitude}) nx=${nx}, ny=${ny} / 기준 ${base_date} ${base_time}\n` + lines.join("\n") }
-                ]
-            };
-        }
-    )
-
-
-	return server.server
+    return server.server
 }
