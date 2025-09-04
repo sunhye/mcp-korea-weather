@@ -1,13 +1,12 @@
 {
   "name": "mcp-korea-weather-fastify",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "node --watch src/server.js",
     "start": "node src/server.js",
-    "start:prod": "NODE_ENV=production node src/server.js",
-    "lint": "echo \"(add eslint if needed)\""
+    "start:prod": "NODE_ENV=production node src/server.js"
   },
   "dependencies": {
     "fastify": "^4.28.1",

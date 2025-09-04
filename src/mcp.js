@@ -38,12 +38,7 @@ export async function toolsCall(name, args) {
       const { items, nx, ny, base_date, base_time } = await getUltraSrtNcst(latitude, longitude);
       const summary = summarizeObs(items);
       return {
-        content: [
-          {
-            type: "text",
-            text: `(${latitude}, ${longitude}) nx=${nx}, ny=${ny} / 기준 ${base_date} ${base_time}\n${summary}`
-          }
-        ]
+        content: [{ type: "text", text: `(${latitude}, ${longitude}) nx=${nx}, ny=${ny} / 기준 ${base_date} ${base_time}\n${summary}` }]
       };
     }
     case "get_korea_forecast": {
@@ -51,12 +46,7 @@ export async function toolsCall(name, args) {
       const { items, nx, ny, base_date, base_time } = await getUltraSrtFcst(latitude, longitude);
       const lines = summarizeFcst(items);
       return {
-        content: [
-          {
-            type: "text",
-            text: `(${latitude}, ${longitude}) nx=${nx}, ny=${ny} / 기준 ${base_date} ${base_time}\n` + lines.join("\n")
-          }
-        ]
+        content: [{ type: "text", text: `(${latitude}, ${longitude}) nx=${nx}, ny=${ny} / 기준 ${base_date} ${base_time}\n` + lines.join("\n") }]
       };
     }
     default:
@@ -66,13 +56,8 @@ export async function toolsCall(name, args) {
 
 export function initialize(req) {
   return {
-    serverInfo: {
-      name: "mcp-korea-weather-fastify",
-      version: "1.0.0"
-    },
+    serverInfo: { name: "mcp-korea-weather-fastify", version: "1.1.0" },
     protocolVersion: "2025-06-18",
-    capabilities: {
-      tools: {}
-    }
+    capabilities: { tools: {} }
   };
 }

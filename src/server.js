@@ -8,10 +8,11 @@ const app = Fastify({ logger: false });
 await app.register(cors, { origin: true });
 await app.register(formBody);
 
-app.get("/health", async (req, reply) => {
-  return { ok: true, ts: new Date().toISOString() };
-});
+// Root & health for probes
+app.get("/", async () => ({ ok: true, service: "mcp-korea-weather-fastify" }));
+app.get("/health", async () => ({ ok: true, ts: new Date().toISOString() }));
 
+// JSON-RPC endpoint
 app.post("/", async (req, reply) => {
   try {
     const body = req.body || {};
@@ -31,7 +32,6 @@ app.post("/", async (req, reply) => {
       const { name, arguments: args } = params || {};
       result = await toolsCall(name, args);
     } else if (method === "notifications/initialized") {
-      // Acknowledge; no payload necessary
       result = { acknowledged: true };
     } else {
       return reply.code(404).send({ jsonrpc: "2.0", id, error: { code: -32601, message: "Method not found" }});
@@ -47,10 +47,36 @@ app.post("/", async (req, reply) => {
   }
 });
 
-const port = process.env.PORT ? Number(process.env.PORT) : 8787;
+const port = process.env.PORT ? Number(process.env.PORT) : 8080;
 const host = process.env.HOST || "0.0.0.0";
 
-app.listen({ port, host }).catch((e) => {
-  console.error("Server failed to start:", e);
-  process.exit(1);
-});
+const closeSignals = ["SIGINT","SIGTERM"];
+let closing = false;
+
+async function start() {
+  try {
+    await app.listen({ port, host });
+    console.log(`[mcp] listening on ${host}:${port}`);
+  } catch (e) {
+    console.error("[mcp] server start failed:", e);
+    process.exit(1);
+  }
+}
+
+async function shutdown(signal) {
+  if (closing) return;
+  closing = true;
+  console.log(`[mcp] received ${signal}, closing...`);
+  try {
+    await app.close();
+    console.log("[mcp] closed gracefully");
+    process.exit(0);
+  } catch (e) {
+    console.error("[mcp] error on close:", e);
+    process.exit(1);
+  }
+}
+
+closeSignals.forEach(sig => process.on(sig, () => shutdown(sig)));
+
+start();

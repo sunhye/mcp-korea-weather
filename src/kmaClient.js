@@ -41,30 +41,21 @@ async function fetchWithFallbacks(type, lat, lon) {
         return { items, nx, ny, base_date, base_time };
       }
     } catch (e) {
-      // continue fallback
+      // continue
     }
 
-    // Roll back an hour and retry
+    // step back 1 hour
     dt = new Date(dt.getTime() - 3600000);
   }
   throw new Error("No items returned after fallback attempts");
 }
 
-export async function getUltraSrtNcst(lat, lon) {
-  return await fetchWithFallbacks("obs", lat, lon);
-}
-
-export async function getUltraSrtFcst(lat, lon) {
-  return await fetchWithFallbacks("fcst", lat, lon);
-}
+export async function getUltraSrtNcst(lat, lon) { return await fetchWithFallbacks("obs", lat, lon); }
+export async function getUltraSrtFcst(lat, lon) { return await fetchWithFallbacks("fcst", lat, lon); }
 
 export function summarizeObs(items) {
-  // Categories: T1H(기온), RN1(강수량), WSD(풍속), REH(습도)
   const pick = (c) => items.find(x => x.category === c)?.obsrValue;
-  const T1H = pick("T1H");
-  const RN1 = pick("RN1");
-  const WSD = pick("WSD");
-  const REH = pick("REH");
+  const T1H = pick("T1H"), RN1 = pick("RN1"), WSD = pick("WSD"), REH = pick("REH");
   let s = [];
   if (T1H != null) s.push(`기온 ${T1H}°C`);
   if (REH != null) s.push(`습도 ${REH}%`);
@@ -74,8 +65,6 @@ export function summarizeObs(items) {
 }
 
 export function summarizeFcst(items) {
-  // PTY(강수형태), POP(강수확률), SKY(하늘상태), T1H(기온)
-  // pick earliest 3 slots
   const byTime = {};
   for (const it of items) {
     const key = `${it.fcstDate}-${it.fcstTime}`;

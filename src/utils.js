@@ -1,15 +1,11 @@
-// KMA LCC DFS coordinate conversion (WGS84 -> grid nx, ny)
 export function toGrid(lat, lon) {
-  // constants
-  const RE = 6371.00877; // km
-  const GRID = 5.0;      // km
+  const RE = 6371.00877;
+  const GRID = 5.0;
   const SLAT1 = 30.0 * Math.PI / 180.0;
   const SLAT2 = 60.0 * Math.PI / 180.0;
   const OLON = 126.0 * Math.PI / 180.0;
   const OLAT = 38.0 * Math.PI / 180.0;
-  const XO = 43; // ref x
-  const YO = 136; // ref y
-
+  const XO = 43, YO = 136;
   const DEGRAD = Math.PI / 180.0;
 
   let re = RE / GRID;
@@ -39,7 +35,6 @@ export function nowKST() {
 }
 
 export function fmtDateTimeBaseForUltraSrtObs(kstDate = nowKST()) {
-  // HH00 baseTime for obs
   const y = kstDate.getFullYear();
   const m = String(kstDate.getMonth() + 1).padStart(2, '0');
   const d = String(kstDate.getDate()).padStart(2, '0');
@@ -48,7 +43,6 @@ export function fmtDateTimeBaseForUltraSrtObs(kstDate = nowKST()) {
 }
 
 export function fmtDateTimeBaseForUltraSrtFcst(kstDate = nowKST()) {
-  // HH30 baseTime for fcst
   const y = kstDate.getFullYear();
   const m = String(kstDate.getMonth() + 1).padStart(2, '0');
   const d = String(kstDate.getDate()).padStart(2, '0');
