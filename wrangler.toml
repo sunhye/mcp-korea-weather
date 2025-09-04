@@ -1,0 +1,11 @@
+name = "mcp-korea-weather"
+main = "src/workers.ts"
+compatibility_date = "2025-08-30"
+
+[vars]
+# 한국 기상청 API 설정
+KMA_API_BASE_URL = "http://apis.data.go.kr/1360000/VilageFcstInfoService_2.0"
+KMA_SERVICE_KEY = "k7xdLA05tkiqC7A2V0tDNSixehM7nZdQgw0UeTVt4cRRZa+s+wPg8aCh01FOcRcThADduosqt33/oTy592CBUg=="
+DEFAULT_PAGE_NO = "1"
+DEFAULT_NUM_OF_ROWS = "100"
+DEFAULT_DATA_TYPE = "JSON"
