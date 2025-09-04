@@ -1,22 +1,6 @@
-name: mcp-korea-weather
-description: >
-  한국 기상청 초단기실황/예보를 MCP 프로토콜로 제공하는 서버입니다.
-  Fastify(Node.js) 기반이며, initialize / tools/list / tools/call을 지원합니다.
-categories:
-  - data
-  - weather
-license: MIT
-repository: https://github.com/<your-username>/mcp-korea-weather-fastify
-entrypoint: .
-dockerfile: ./Dockerfile
-
-mcp:
-  protocol: 2025-06-18
-  transport: http
-  endpoint: /
-  health: /health
-  tools:
-    - name: get_korea_weather
-      description: "기상청 초단기실황"
-    - name: get_korea_forecast
-      description: "기상청 초단기예보"
+runtime: "container"
+build:
+  dockerfile: "Dockerfile"
+  dockerBuildPath: "."
+startCommand:
+  type: "http"
