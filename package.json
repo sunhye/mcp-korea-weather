@@ -4,15 +4,13 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "wrangler dev",
-    "deploy": "wrangler deploy",
-    "typecheck": "tsc --noEmit",
-    "build": "wrangler deploy --dry-run",
-    "format": "prettier -w ."
+    "build:worker": "esbuild src/workers.ts --bundle --format=esm --platform=browser --outfile=dist/worker.mjs",
+    "serve:mf": "miniflare dist/worker.mjs --port=8787 --modules --compatibility-date=2025-06-18",
+    "start": "npm run build:worker && npm run serve:mf"
   },
   "devDependencies": {
-    "wrangler": "^3.78.7",
-    "typescript": "^5.5.4",
-    "prettier": "^3.3.3"
+    "miniflare": "^3.20240909.0",
+    "esbuild": "^0.23.0",
+    "@cloudflare/workers-types": "^4.20240909.0"
   }
 }
