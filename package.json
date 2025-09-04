@@ -1,23 +1,14 @@
 {
-	"name": "smithery-scaffold",
+	"name": "my-mcp-server",
 	"version": "1.0.0",
-	"description": "",
-	"main": "index.js",
-	"module": "src/index.ts",
 	"type": "module",
+	"module": "src/index.ts",
 	"scripts": {
-		"dev": "npx @smithery/cli dev",
-		"build": "npx @smithery/cli build"
+		"build": "npx @smithery/cli build",
+		"dev": "npx @smithery/cli dev"
 	},
-	"keywords": [],
-	"author": "",
-	"license": "ISC",
 	"dependencies": {
-		"@modelcontextprotocol/sdk": "^1.17.4",
+		"@modelcontextprotocol/sdk": "^1.17.3",
 		"zod": "^3.25.46"
-	},
-	"devDependencies": {
-		"@smithery/cli": "^1.2.4",
-		"tsx": "^4.19.4"
 	}
 }
