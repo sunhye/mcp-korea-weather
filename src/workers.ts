@@ -5,7 +5,6 @@
 
 export interface Env {
     KMA_API_BASE_URL: string;
-    KMA_SERVICE_KEY: string;
     DEFAULT_PAGE_NO: string;
     DEFAULT_NUM_OF_ROWS: string;
     DEFAULT_DATA_TYPE: string;  // "JSON" 권장
@@ -82,7 +81,7 @@ function sleep(ms: number) {
 async function fetchKoreaApiData(
     endpoint: string,
     params: {
-        serviceKey?: string;
+        serviceKey: string;
         nx: string;
         ny: string;
         base_date: string;
@@ -99,7 +98,7 @@ async function fetchKoreaApiData(
     }
 ) {
     const apiUrl = `${env.KMA_API_BASE_URL}/${endpoint}`;
-    const serviceKey = params.serviceKey || env.KMA_SERVICE_KEY;
+    const serviceKey = params.serviceKey;
 
     const queryParams = new URLSearchParams({
         ServiceKey: serviceKey,
