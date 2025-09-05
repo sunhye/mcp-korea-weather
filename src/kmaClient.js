@@ -1,4 +1,8 @@
+import { config } from "dotenv";
 import { httpGetJson, fmtDateTimeBaseForUltraSrtObs, fmtDateTimeBaseForUltraSrtFcst, toGrid, nowKST } from "./utils.js";
+
+// Load environment variables from .env file
+config();
 
 const DEFAULT_NUM_OF_ROWS = process.env.DEFAULT_NUM_OF_ROWS || "60";
 const DEFAULT_DATA_TYPE = process.env.DEFAULT_DATA_TYPE || "JSON";
