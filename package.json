@@ -1,14 +1,23 @@
 {
-	"name": "my-mcp-server",
+	"name": "mcp-korea-weahter",
 	"version": "1.0.0",
-	"type": "module",
+	"description": "",
+	"main": "index.js",
 	"module": "src/index.ts",
+	"type": "module",
 	"scripts": {
-		"build": "npx @smithery/cli build",
-		"dev": "npx @smithery/cli dev"
+		"dev": "npx @smithery/cli dev",
+		"build": "npx @smithery/cli build"
 	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
 	"dependencies": {
-		"@modelcontextprotocol/sdk": "^1.17.3",
+		"@modelcontextprotocol/sdk": "^1.17.4",
 		"zod": "^3.25.46"
+	},
+	"devDependencies": {
+		"@smithery/cli": "^1.2.4",
+		"tsx": "^4.19.4"
 	}
 }

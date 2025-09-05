@@ -16,6 +16,7 @@
 
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js"
 import { z } from "zod"
+import {getUltraSrtFcst, getUltraSrtNcst, summarizeFcst, summarizeObs} from "./kmaClient";
 
 // Optional: If you have user-level config, define it here
 // This should map to the config in your smithery.yaml file
@@ -29,66 +30,48 @@ export default function createServer({
     config: z.infer<typeof configSchema> // Define your config in smithery.yaml
 }) {
     const server = new McpServer({
-        name: "Say Hello",
+        name: "mcp-korea-weather",
         version: "1.0.0",
     })
 
     // Add a tool
-    server.registerTool(
-        "hello",
+    server.tool(
+        "get_korea_weather",
+        "기상청 초단기실황(기온/강수/풍속/습도)",
         {
-            title: "Hello Tool",
-            description: "Say hello to someone",
-            inputSchema: { name: z.string().describe("Name to greet") },
         },
-        async ({ name }) => ({
-            content: [{ type: "text", text: `Hello, ${name}!` }],
-        }),
-    )
-
-    // Add a resource
-    server.registerResource(
-        "hello-world-history",
-        "history://hello-world",
-        {
-            title: "Hello World History",
-            description: "The origin story of the famous 'Hello, World' program",
-        },
-        async uri => ({
-            contents: [
-                {
-                    uri: uri.href,
-                    text: '"Hello, World" first appeared in a 1972 Bell Labs memo by Brian Kernighan and later became the iconic first program for beginners in countless languages.',
-                    mimeType: "text/plain",
-                },
-            ],
-        }),
-    )
-
-    // Add a prompt
-    server.registerPrompt(
-        "greet",
-        {
-            title: "Hello Prompt",
-            description: "Say hello to someone",
-            argsSchema: {
-                name: z.string().describe("Name of the person to greet"),
-            },
-        },
-        async ({ name }) => {
+        async (args, context) => {
+            const {latitude, longitude} = args as { latitude: string; longitude: string };
+            const {items, nx, ny, base_date, base_time} = await getUltraSrtNcst(latitude, longitude);
+            const summary = summarizeObs(items);
             return {
-                messages: [
+                content: [
                     {
-                        role: "user",
-                        content: {
-                            type: "text",
-                            text: `Say hello to ${name}`,
-                        },
-                    },
-                ],
-            }
+                        type: "text",
+                        text: `(${latitude}, ${longitude}) nx=${nx}, ny=${ny} / 기준 ${base_date} ${base_time}\n${summary}`
+                    }
+                ]
+            };
         },
-    )
+    );
+
+    server.tool(
+        "get_korea_forecast",
+        "기상청 초단기예보(향후 3개 타임슬롯 요약)",
+        {
+        },
+        async (args, context) => {
+            const { latitude, longitude } = args as { latitude: string; longitude: string };
+            const { items, nx, ny, base_date, base_time } = await getUltraSrtFcst(latitude, longitude);
+            const lines = summarizeFcst(items);
+            return {
+                content: [
+                    { type: "text", text: `(${latitude}, ${longitude}) nx=${nx}, ny=${ny} / 기준 ${base_date} ${base_time}\n` + lines.join("\n") }
+                ]
+            };
+        }
+    );
+
 
     return server.server
 }
